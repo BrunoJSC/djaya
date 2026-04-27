@@ -2,9 +2,10 @@
 
 import { ArrowLeftIcon, ArrowRightIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
+import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function Gallery({
   images,
@@ -13,33 +14,61 @@ export function Gallery({
 }>) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const imageIndex = searchParams.has("image")
+  const imageSearchIndex = searchParams.has("image")
     ? Number.parseInt(searchParams.get("image")!)
     : 0;
+
+  // Embla Carousel
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "center",
+    skipSnaps: false,
+    startIndex: imageSearchIndex,
+    // Disable drag on desktop (lg+) so zoom works; enable on mobile
+    watchDrag: (_, event) => {
+      // TouchEvent = mobile drag, MouseEvent = desktop drag
+      return event instanceof TouchEvent;
+    },
+  });
+
+  const [selectedIndex, setSelectedIndex] = useState(imageSearchIndex);
 
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const imageRef = useRef<HTMLDivElement>(null);
 
-  // Touch/swipe state
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
-  const isSwiping = useRef(false);
+  // Sync Embla selected index → URL param + local state
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    const index = emblaApi.selectedScrollSnap();
+    setSelectedIndex(index);
 
-  const updateImage = useCallback(
-    (index: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("image", index);
-      router.replace(`?${params.toString()}`, { scroll: false });
-      setIsZoomed(false);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("image", index.toString());
+    router.replace(`?${params.toString()}`, { scroll: false });
+    setIsZoomed(false);
+  }, [emblaApi, router, searchParams]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on("select", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  // Sync URL param → Embla (when user clicks thumbnail)
+  const scrollTo = useCallback(
+    (index: number) => {
+      emblaApi?.scrollTo(index);
     },
-    [router, searchParams],
+    [emblaApi],
   );
 
-  const nextImageIndex = imageIndex + 1 < images.length ? imageIndex + 1 : 0;
-  const previousImageIndex =
-    imageIndex === 0 ? images.length - 1 : imageIndex - 1;
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
+  // Desktop zoom handler
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imageRef.current) return;
     const rect = imageRef.current.getBoundingClientRect();
@@ -47,36 +76,6 @@ export function Gallery({
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setZoomPosition({ x, y });
   };
-
-  // Touch handlers for swipe
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.targetTouches[0]!.clientX;
-    touchEndX.current = e.targetTouches[0]!.clientX;
-    isSwiping.current = false;
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    touchEndX.current = e.targetTouches[0]!.clientX;
-    const diff = Math.abs(touchStartX.current - touchEndX.current);
-    if (diff > 10) {
-      isSwiping.current = true;
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    if (!isSwiping.current) return;
-    const diff = touchStartX.current - touchEndX.current;
-    const threshold = 50;
-
-    if (diff > threshold) {
-      // Swipe left → next image
-      updateImage(nextImageIndex.toString());
-    } else if (diff < -threshold) {
-      // Swipe right → previous image
-      updateImage(previousImageIndex.toString());
-    }
-    isSwiping.current = false;
-  }, [nextImageIndex, previousImageIndex, updateImage]);
 
   return (
     <div className="flex h-full w-full gap-4">
@@ -87,11 +86,11 @@ export function Gallery({
             <button
               key={`${index}-${img.src}`}
               type="button"
-              onClick={() => updateImage(index.toString())}
+              onClick={() => scrollTo(index)}
               aria-label={`Ver imagem ${index + 1}`}
               className={clsx(
                 "relative aspect-square w-full overflow-hidden bg-neutral-50 transition-all",
-                index === imageIndex
+                index === selectedIndex
                   ? "border border-neutral-900/40"
                   : "border border-neutral-200 opacity-60 hover:opacity-100"
               )}
@@ -109,45 +108,57 @@ export function Gallery({
         </div>
       )}
 
-      {/* Main Image */}
+      {/* Main Image — Embla Carousel */}
       <div className="group relative flex-1 h-full overflow-hidden bg-neutral-50 border border-neutral-100">
-        {/* Desktop: Zoom interaction */}
+        {/* Embla viewport */}
         <div
-          ref={imageRef}
-          role="region"
-          aria-label="Imagem do produto com zoom"
-          tabIndex={0}
-          className={clsx(
-            "relative h-full w-full overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-neutral-900",
-            "lg:cursor-zoom-in",
-            isZoomed && "lg:cursor-zoom-out"
-          )}
-          onMouseEnter={() => setIsZoomed(true)}
-          onMouseLeave={() => setIsZoomed(false)}
-          onMouseMove={handleMouseMove}
-          onFocus={() => setIsZoomed(true)}
-          onBlur={() => setIsZoomed(false)}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          className="h-full w-full overflow-hidden"
+          ref={emblaRef}
         >
-          {images[imageIndex] && (
-            <Image
-              className={clsx(
-                "h-full w-full object-cover object-center transition-transform duration-300 mix-blend-multiply",
-                isZoomed && "lg:scale-150"
-              )}
-              style={isZoomed ? {
-                transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
-              } : {}}
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              alt={images[imageIndex]?.altText || ""}
-              src={images[imageIndex]?.src || ""}
-              quality={90}
-              priority={true}
-            />
-          )}
+          <div className="flex h-full touch-pan-y">
+            {images.map((img, index) => (
+              <div
+                key={`slide-${index}-${img.src}`}
+                className="relative h-full w-full flex-[0_0_100%] min-w-0"
+              >
+                {/* Desktop: Zoom interaction layer (only on active slide) */}
+                <div
+                  ref={index === selectedIndex ? imageRef : null}
+                  role="region"
+                  aria-label="Imagem do produto com zoom"
+                  tabIndex={index === selectedIndex ? 0 : -1}
+                  className={clsx(
+                    "relative h-full w-full overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-neutral-900",
+                    "lg:cursor-zoom-in",
+                    isZoomed && index === selectedIndex && "lg:cursor-zoom-out"
+                  )}
+                  onMouseEnter={() => setIsZoomed(true)}
+                  onMouseLeave={() => setIsZoomed(false)}
+                  onMouseMove={handleMouseMove}
+                  onFocus={() => setIsZoomed(true)}
+                  onBlur={() => setIsZoomed(false)}
+                >
+                  <Image
+                    className={clsx(
+                      "h-full w-full object-cover object-center transition-transform duration-300 mix-blend-multiply",
+                      isZoomed && index === selectedIndex && "lg:scale-150"
+                    )}
+                    style={
+                      isZoomed && index === selectedIndex
+                        ? { transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%` }
+                        : {}
+                    }
+                    fill
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    alt={img.altText || ""}
+                    src={img.src || ""}
+                    quality={90}
+                    priority={index === 0}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Zoom Indicator — Desktop only */}
@@ -161,10 +172,9 @@ export function Gallery({
         {/* Navigation Arrows */}
         {images.length > 1 && (
           <>
-            {/* Mobile: always visible, semi-transparent */}
             <button
               type="button"
-              onClick={() => updateImage(previousImageIndex.toString())}
+              onClick={scrollPrev}
               aria-label="Imagem anterior"
               className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center h-10 w-10 rounded-full bg-white/80 text-neutral-700 shadow-md transition-all active:scale-95 lg:left-4 lg:h-11 lg:w-11 lg:opacity-0 lg:group-hover:opacity-100 lg:hover:bg-white lg:hover:scale-110"
             >
@@ -172,7 +182,7 @@ export function Gallery({
             </button>
             <button
               type="button"
-              onClick={() => updateImage(nextImageIndex.toString())}
+              onClick={scrollNext}
               aria-label="Próxima imagem"
               className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center h-10 w-10 rounded-full bg-white/80 text-neutral-700 shadow-md transition-all active:scale-95 lg:right-4 lg:h-11 lg:w-11 lg:opacity-0 lg:group-hover:opacity-100 lg:hover:bg-white lg:hover:scale-110"
             >
@@ -185,7 +195,7 @@ export function Gallery({
         {images.length > 1 && (
           <div className="absolute top-4 right-4 lg:hidden">
             <span className="rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-medium tracking-wider text-neutral-600 shadow-sm">
-              {imageIndex + 1} / {images.length}
+              {selectedIndex + 1} / {images.length}
             </span>
           </div>
         )}
@@ -197,11 +207,11 @@ export function Gallery({
               <button
                 key={`dot-${index}-${images[index]?.src}`}
                 type="button"
-                onClick={() => updateImage(index.toString())}
+                onClick={() => scrollTo(index)}
                 aria-label={`Ver imagem ${index + 1}`}
                 className={clsx(
                   "h-2 rounded-full transition-all duration-300",
-                  index === imageIndex
+                  index === selectedIndex
                     ? "w-7 bg-neutral-800"
                     : "w-2 bg-neutral-800/30 active:bg-neutral-800/60"
                 )}
