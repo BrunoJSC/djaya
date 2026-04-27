@@ -1,14 +1,14 @@
-import Image from "next/image";
-import Link from "next/link";
 import Price from "components/price";
 import { Product } from "lib/shopify/types";
+import Image from "next/image";
+import Link from "next/link";
 
 interface ProductCardProps {
   product: Product;
   variant?: "default" | "minimal";
 }
 
-export function ProductCard({ product, variant = "minimal" }: ProductCardProps) {
+export function ProductCard({ product, variant = "minimal" }: Readonly<ProductCardProps>) {
   const isNew = product.tags.includes("New");
 
   return (
@@ -20,9 +20,10 @@ export function ProductCard({ product, variant = "minimal" }: ProductCardProps) 
             <Image
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               src={product.featuredImage.url}
-              alt={product.featuredImage.altText}
+              alt={product.featuredImage.altText || product.title}
               fill
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              quality={85}
               priority={false}
             />
           )}

@@ -147,6 +147,8 @@ export default function CartModal() {
                               <Image
                                 className="h-full w-full object-cover mix-blend-multiply"
                                 fill
+                                sizes="96px"
+                                quality={85}
                                 alt={
                                   item.merchandise.product.featuredImage
                                     .altText ||

@@ -64,6 +64,7 @@ export function Gallery({
                 fill
                 className="object-cover object-center mix-blend-multiply"
                 sizes="96px"
+                quality={90}
               />
             </button>
           ))}
@@ -101,6 +102,7 @@ export function Gallery({
               sizes="(min-width: 1024px) 50vw, 100vw"
               alt={images[imageIndex]?.altText || ""}
               src={images[imageIndex]?.src || ""}
+              quality={90}
               priority={true}
             />
           )}

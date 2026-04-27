@@ -53,6 +53,7 @@ function StackedPanel({
           fill
           className="object-cover"
           sizes="100vw"
+          quality={90}
           priority={priority}
         />
       </motion.div>
