@@ -55,6 +55,14 @@ const productFragment = /* GraphQL */ `
       ...seo
     }
     tags
+    collections(first: 5) {
+      edges {
+        node {
+          handle
+          title
+        }
+      }
+    }
     updatedAt
   }
   ${imageFragment}

@@ -1,7 +1,5 @@
 "use client";
 
-import { PlusIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
 import { addItem } from "components/cart/actions";
 import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
@@ -11,18 +9,17 @@ import { useCart } from "./cart-context";
 function SubmitButton({
   availableForSale,
   selectedVariantId,
-}: {
+}: Readonly<{
   availableForSale: boolean;
   selectedVariantId: string | undefined;
-}) {
-  const buttonClasses =
-    "relative flex w-full items-center justify-center rounded-full bg-blue-600 p-4 tracking-wide text-white";
-  const disabledClasses = "cursor-not-allowed opacity-60 hover:opacity-60";
-
+}>) {
   if (!availableForSale) {
     return (
-      <button disabled className={clsx(buttonClasses, disabledClasses)}>
-        Out Of Stock
+      <button
+        disabled
+        className="flex w-full items-center justify-center gap-2 bg-neutral-200 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500"
+      >
+        Esgotado
       </button>
     );
   }
@@ -30,34 +27,27 @@ function SubmitButton({
   if (!selectedVariantId) {
     return (
       <button
-        aria-label="Please select an option"
+        aria-label="Por favor, selecione um tamanho"
         disabled
-        className={clsx(buttonClasses, disabledClasses)}
+        className="flex w-full items-center justify-center gap-2 bg-neutral-400 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-white opacity-80"
       >
-        <div className="absolute left-0 ml-4">
-          <PlusIcon className="h-5" />
-        </div>
-        Add To Cart
+        Selecione um tamanho
       </button>
     );
   }
 
   return (
     <button
-      aria-label="Add to cart"
-      className={clsx(buttonClasses, {
-        "hover:opacity-90": true,
-      })}
+      aria-label="Adicionar à sacola"
+      type="submit"
+      className="group flex w-full items-center justify-center gap-3 bg-neutral-900 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-all hover:bg-neutral-800"
     >
-      <div className="absolute left-0 ml-4">
-        <PlusIcon className="h-5" />
-      </div>
-      Add To Cart
+      Adicionar à Sacola
     </button>
   );
 }
 
-export function AddToCart({ product }: { product: Product }) {
+export function AddToCart({ product }: Readonly<{ product: Product }>) {
   const { variants, availableForSale } = product;
   const { addCartItem } = useCart();
   const searchParams = useSearchParams();
@@ -81,6 +71,7 @@ export function AddToCart({ product }: { product: Product }) {
         addCartItem(finalVariant, product);
         addItemAction();
       }}
+      className="flex flex-col gap-6"
     >
       <SubmitButton
         availableForSale={availableForSale}
@@ -92,3 +83,4 @@ export function AddToCart({ product }: { product: Product }) {
     </form>
   );
 }
+

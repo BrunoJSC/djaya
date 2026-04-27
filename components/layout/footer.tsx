@@ -1,76 +1,34 @@
 import Link from "next/link";
 
-import FooterMenu from "components/layout/footer-menu";
-import LogoSquare from "components/logo-square";
-import { getMenu } from "lib/shopify";
-import { Suspense } from "react";
-
-const { COMPANY_NAME, SITE_NAME } = process.env;
+const { SITE_NAME } = process.env;
 
 export default async function Footer() {
-  const currentYear = new Date().getFullYear();
-  const copyrightDate = 2023 + (currentYear > 2023 ? `-${currentYear}` : "");
-  const skeleton =
-    "w-full h-6 animate-pulse rounded-sm bg-neutral-200 dark:bg-neutral-700";
-  const menu = await getMenu("next-js-frontend-footer-menu");
-  const copyrightName = COMPANY_NAME || SITE_NAME || "";
-
   return (
-    <footer className="text-sm text-neutral-500 dark:text-neutral-400">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 border-t border-neutral-200 px-6 py-12 text-sm md:flex-row md:gap-12 md:px-4 min-[1320px]:px-0 dark:border-neutral-700">
-        <div>
-          <Link
-            className="flex items-center gap-2 text-black md:pt-1 dark:text-white"
-            href="/"
-          >
-            <LogoSquare size="sm" />
-            <span className="uppercase">{SITE_NAME}</span>
-          </Link>
-        </div>
-        <Suspense
-          fallback={
-            <div className="flex h-[188px] w-[200px] flex-col gap-2">
-              <div className={skeleton} />
-              <div className={skeleton} />
-              <div className={skeleton} />
-              <div className={skeleton} />
-              <div className={skeleton} />
-              <div className={skeleton} />
-            </div>
-          }
-        >
-          <FooterMenu menu={menu} />
-        </Suspense>
-        <div className="md:ml-auto">
-          <a
-            className="flex h-8 w-max flex-none items-center justify-center rounded-md border border-neutral-200 bg-white text-xs text-black dark:border-neutral-700 dark:bg-black dark:text-white"
-            aria-label="Deploy on Vercel"
-            href="https://vercel.com/templates/next.js/nextjs-commerce"
-          >
-            <span className="px-3">▲</span>
-            <hr className="h-full border-r border-neutral-200 dark:border-neutral-700" />
-            <span className="px-3">Deploy</span>
+    <footer className="bg-white border-t border-neutral-100">
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col items-center px-4 py-20 sm:px-6 lg:px-12 text-center">
+        {/* Brand */}
+        <Link href="/" className="mb-10 flex flex-col items-center transition-opacity hover:opacity-80">
+          <span className="text-xl font-bold tracking-[0.3em] text-neutral-900 uppercase">
+            {SITE_NAME || "DJAYA LEVY"}
+          </span>
+        </Link>
+
+        {/* Links */}
+        <div className="mb-12 flex flex-col md:flex-row items-center justify-center gap-8 text-[11px] font-medium tracking-[0.2em] uppercase text-neutral-500">
+          <a href="https://instagram.com/djayalevy" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-900 transition-colors">
+            Instagram
           </a>
         </div>
-      </div>
-      <div className="border-t border-neutral-200 py-6 text-sm dark:border-neutral-700">
-        <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-1 px-4 md:flex-row md:gap-0 md:px-4 min-[1320px]:px-0">
-          <p>
-            &copy; {copyrightDate} {copyrightName}
-            {copyrightName.length && !copyrightName.endsWith(".")
-              ? "."
-              : ""}{" "}
-            All rights reserved.
-          </p>
-          <hr className="mx-4 hidden h-4 w-[1px] border-l border-neutral-400 md:inline-block" />
-          <p>
-            <a href="https://github.com/vercel/commerce">View the source</a>
-          </p>
-          <p className="md:ml-auto">
-            <a href="https://vercel.com" className="text-black dark:text-white">
-              Created by ▲ Vercel
-            </a>
-          </p>
+
+        {/* Company Info / Copyright */}
+        <div className="flex flex-col items-center gap-2 text-[10px] tracking-widest text-neutral-400 uppercase">
+          <p>&copy; 2026 DJAYA LEVY &middot; DJAYA E LEVY LTDA</p>
+          <div className="flex flex-col items-center gap-1 mt-2">
+            <p>53.737.969/0001-06 &middot; S&atilde;o Paulo - SP</p>
+            <p>
+              Contato &mdash; <a href="mailto:atelier@djayalevy.com" className="hover:text-neutral-900 transition-colors lowercase">atelier@djayalevy.com</a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

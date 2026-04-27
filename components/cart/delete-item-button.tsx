@@ -1,6 +1,6 @@
 "use client";
 
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XIcon } from "@phosphor-icons/react";
 import { removeItem } from "components/cart/actions";
 import type { CartItem } from "lib/shopify/types";
 import { useActionState } from "react";
@@ -17,18 +17,17 @@ export function DeleteItemButton({
   const removeItemAction = formAction.bind(null, merchandiseId);
 
   return (
-    <form
-      action={async () => {
-        optimisticUpdate(merchandiseId, "delete");
-        removeItemAction();
-      }}
-    >
+    <form>
       <button
         type="submit"
-        aria-label="Remove cart item"
-        className="flex h-[24px] w-[24px] items-center justify-center rounded-full bg-neutral-500"
+        aria-label="Remover item da sacola"
+        className="text-[10px] tracking-widest uppercase text-neutral-400 hover:text-neutral-900 transition-colors underline underline-offset-4"
+        onClick={async () => {
+          optimisticUpdate(merchandiseId, "delete");
+          removeItemAction();
+        }}
       >
-        <XMarkIcon className="mx-[1px] h-4 w-4 text-white dark:text-black" />
+        Remover
       </button>
       <p aria-live="polite" className="sr-only" role="status">
         {message}

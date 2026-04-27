@@ -1,59 +1,116 @@
+import { UserIcon } from "@heroicons/react/24/outline";
 import CartModal from "components/cart/modal";
-import LogoSquare from "components/logo-square";
-import { getMenu } from "lib/shopify";
-import { Menu } from "lib/shopify/types";
 import Link from "next/link";
 import { Suspense } from "react";
 import MobileMenu from "./mobile-menu";
-import Search, { SearchSkeleton } from "./search";
+import PrataNavigationMenu from "./prata-navigation-menu";
 
-const { SITE_NAME } = process.env;
+const leftMenuItemsBeforePrata = [
+  { title: "OURO", path: "/search/ouro" },
+];
+
+const leftMenuItemsAfterPrata = [
+  { title: "LAÇOS", path: "/search/lacos" },
+  { title: "PEDRA", path: "/search/pedra" },
+];
+
+const prataMenuItem = { title: "PRATA", path: "/search/prata" };
+
+const rightMenuItems = [
+  { title: "SOBRE", path: "/sobre" },
+  { title: "ONDE ESTAMOS", path: "/onde-estamos" },
+];
+
+const navLinkClass =
+  "text-[11px] font-medium tracking-[0.18em] text-neutral-500 uppercase transition-colors hover:text-neutral-900";
 
 export async function Navbar() {
-  const menu = await getMenu("next-js-frontend-header-menu");
-
   return (
-    <nav className="relative flex items-center justify-between p-4 lg:px-6">
-      <div className="block flex-none md:hidden">
-        <Suspense fallback={null}>
-          <MobileMenu menu={menu} />
-        </Suspense>
-      </div>
-      <div className="flex w-full items-center">
-        <div className="flex w-full md:w-1/3">
+    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-200/50 supports-[backdrop-filter]:bg-white/60">
+      <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 sm:px-6 lg:px-12">
+        {/* Mobile menu & Left Links */}
+        <div className="flex flex-1 items-center justify-start">
+          <div className="md:hidden">
+            <Suspense fallback={null}>
+              <MobileMenu
+                menu={[
+                  ...leftMenuItemsBeforePrata,
+                  prataMenuItem,
+                  ...leftMenuItemsAfterPrata,
+                  ...rightMenuItems,
+                ]}
+              />
+            </Suspense>
+          </div>
+          <ul className="hidden md:flex md:items-center md:gap-6">
+            {leftMenuItemsBeforePrata.map((item) => (
+              <li key={item.title}>
+                <Link
+                  href={item.path}
+                  prefetch={true}
+                  className={navLinkClass}
+                >
+                  {item.title}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <PrataNavigationMenu />
+            </li>
+            {leftMenuItemsAfterPrata.map((item) => (
+              <li key={item.title}>
+                <Link
+                  href={item.path}
+                  prefetch={true}
+                  className={navLinkClass}
+                >
+                  {item.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Center Logo */}
+        <div className="flex flex-none flex-col items-center justify-center">
           <Link
             href="/"
             prefetch={true}
-            className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6"
+            className="flex flex-col items-center justify-center"
           >
-            <LogoSquare />
-            <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block">
-              {SITE_NAME}
-            </div>
+            <span className="text-xl font-bold tracking-[0.26em] text-neutral-900 uppercase sm:text-2xl">
+              DJAYA LEVY
+            </span>
           </Link>
-          {menu.length ? (
-            <ul className="hidden gap-6 text-sm md:flex md:items-center">
-              {menu.map((item: Menu) => (
-                <li key={item.title}>
-                  <Link
-                    href={item.path}
-                    prefetch={true}
-                    className="text-neutral-500 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
-                  >
-                    {item.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : null}
         </div>
-        <div className="hidden justify-center md:flex md:w-1/3">
-          <Suspense fallback={<SearchSkeleton />}>
-            <Search />
-          </Suspense>
-        </div>
-        <div className="flex justify-end md:w-1/3">
-          <CartModal />
+
+        {/* Right Links & Icons */}
+        <div className="flex flex-1 items-center justify-end gap-4 md:gap-5">
+          <ul className="hidden md:flex md:items-center md:gap-6">
+            {rightMenuItems.map((item) => (
+              <li key={item.title}>
+                <Link
+                  href={item.path}
+                  prefetch={true}
+                  className={navLinkClass}
+                >
+                  {item.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex items-center gap-4">
+            {/* Account */}
+            <button
+              aria-label="Account"
+              className="group flex items-center justify-center transition-colors hover:text-neutral-900"
+            >
+              <UserIcon className="h-5 w-5 text-neutral-400 transition-colors group-hover:text-neutral-900" />
+            </button>
+            {/* Cart */}
+            <CartModal />
+          </div>
         </div>
       </div>
     </nav>

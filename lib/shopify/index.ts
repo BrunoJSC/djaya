@@ -192,12 +192,13 @@ const reshapeProduct = (
     return undefined;
   }
 
-  const { images, variants, ...rest } = product;
+  const { images, variants, collections, ...rest } = product;
 
   return {
     ...rest,
     images: reshapeImages(images, product.title),
     variants: removeEdgesAndNodes(variants),
+    collections: removeEdgesAndNodes(collections),
   };
 };
 
@@ -357,11 +358,11 @@ export async function getCollections(): Promise<Collection[]> {
     return [
       {
         handle: "",
-        title: "All",
-        description: "All products",
+        title: "Todos",
+        description: "Todos os produtos",
         seo: {
-          title: "All",
-          description: "All products",
+          title: "Todos",
+          description: "Todos os produtos",
         },
         path: "/search",
         updatedAt: new Date().toISOString(),
@@ -376,11 +377,11 @@ export async function getCollections(): Promise<Collection[]> {
   const collections = [
     {
       handle: "",
-      title: "All",
-      description: "All products",
+      title: "Todos",
+      description: "Todos os produtos",
       seo: {
-        title: "All",
-        description: "All products",
+        title: "Todos",
+        description: "Todos os produtos",
       },
       path: "/search",
       updatedAt: new Date().toISOString(),
