@@ -1,4 +1,4 @@
-import { getCollection, getCollectionProducts } from "lib/shopify";
+import { getCollections, getCollection, getCollectionProducts } from "lib/shopify";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -8,6 +8,13 @@ import { ProductPagination } from "components/layout/product-pagination";
 import { defaultSort, sorting } from "lib/constants";
 
 const PRODUCTS_PER_PAGE = 12;
+
+export async function generateStaticParams() {
+  const collections = await getCollections();
+  return collections.map((collection) => ({
+    collection: collection.handle,
+  }));
+}
 
 export async function generateMetadata(props: {
   params: Promise<{ collection: string }>;

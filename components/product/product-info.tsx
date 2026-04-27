@@ -5,6 +5,7 @@ import { AddToCart } from "components/cart/add-to-cart";
 import Price from "components/price";
 import Prose from "components/prose";
 import { Product } from "lib/shopify/types";
+import { Suspense } from "react";
 import { VariantSelector } from "./variant-selector";
 
 interface ProductInfoProps {
@@ -71,10 +72,11 @@ export function ProductInfo({ product }: Readonly<ProductInfoProps>) {
         <VariantSelector options={product.options} variants={product.variants} />
       </div>
 
-      {/* Add to Cart & Favorites */}
       <div className="mt-8 flex items-center gap-4">
         <div className="flex-1">
-          <AddToCart product={product} />
+          <Suspense fallback={null}>
+            <AddToCart product={product} />
+          </Suspense>
         </div>
         <button
           type="button"

@@ -5,6 +5,7 @@ import { Navbar } from "components/layout/navbar";
 import { getCart } from "lib/shopify";
 import { baseUrl } from "lib/utils";
 import { Roboto } from "next/font/google";
+
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -35,6 +36,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
+
   // Don't await the fetch, pass the Promise to the context provider
   const cart = getCart();
 

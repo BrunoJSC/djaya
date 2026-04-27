@@ -6,8 +6,8 @@ import {
 import { isShopifyError } from "lib/type-guards";
 import { ensureStartsWith } from "lib/utils";
 import {
-  unstable_cacheLife as cacheLife,
-  unstable_cacheTag as cacheTag,
+  cacheLife,
+  cacheTag,
   revalidateTag,
 } from "next/cache";
 import { cookies, headers } from "next/headers";
@@ -425,6 +425,10 @@ export async function getMenu(handle: string): Promise<Menu[]> {
 }
 
 export async function getPage(handle: string): Promise<Page> {
+  "use cache";
+  cacheTag(TAGS.collections);
+  cacheLife("days");
+
   const res = await shopifyFetch<ShopifyPageOperation>({
     query: getPageQuery,
     variables: { handle },
@@ -434,6 +438,10 @@ export async function getPage(handle: string): Promise<Page> {
 }
 
 export async function getPages(): Promise<Page[]> {
+  "use cache";
+  cacheTag(TAGS.collections);
+  cacheLife("days");
+
   const res = await shopifyFetch<ShopifyPagesOperation>({
     query: getPagesQuery,
   });

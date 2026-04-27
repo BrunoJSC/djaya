@@ -109,7 +109,9 @@ export async function Navbar() {
               <UserIcon className="h-5 w-5 text-neutral-400 transition-colors group-hover:text-neutral-900" />
             </button>
             {/* Cart */}
-            <CartModal />
+            <Suspense fallback={null}>
+              <CartModal />
+            </Suspense>
           </div>
         </div>
       </div>

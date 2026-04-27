@@ -9,13 +9,20 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
-import { getProduct } from "lib/shopify";
+import { getProduct, getProducts } from "lib/shopify";
 import type { Image as ShopifyImage } from "lib/shopify/types";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { TruckIcon, ShieldCheckIcon, EnvelopeIcon, SparklesIcon } from "@heroicons/react/24/outline";
+
+export async function generateStaticParams() {
+  const products = await getProducts({});
+  return products.map((product) => ({
+    handle: product.handle,
+  }));
+}
 
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>;
