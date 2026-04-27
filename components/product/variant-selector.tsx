@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import { ProductOption, ProductVariant } from "lib/shopify/types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Combination = {
   id: string;
@@ -245,9 +245,21 @@ function RingSizeSelector({
   );
 }
 
-// Size guide button with modal
+// Size guide button with mobile-friendly modal (bottom sheet on mobile)
 function SizeGuideButton() {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   return (
     <>
@@ -261,75 +273,90 @@ function SizeGuideButton() {
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         >
+          {/* Modal: flex column — header fixed, body scrolls */}
           <div
-            className="mx-4 w-full max-w-lg bg-white p-8 shadow-2xl"
+            className={clsx(
+              "relative flex w-full flex-col bg-white shadow-2xl",
+              "max-h-[85vh] rounded-t-2xl",
+              "sm:mx-4 sm:max-w-lg sm:rounded-t-none sm:max-h-[80vh]"
+            )}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-neutral-900">
+            {/* Mobile drag handle */}
+            <div className="flex shrink-0 justify-center pt-3 pb-0 sm:hidden">
+              <div className="h-1 w-10 rounded-full bg-neutral-300" />
+            </div>
+
+            {/* Header — always visible */}
+            <div className="flex shrink-0 items-center justify-between bg-white px-5 py-4 sm:px-8 sm:py-6 border-b border-neutral-100 rounded-t-2xl sm:rounded-t-none">
+              <h3 className="text-base sm:text-lg font-bold text-neutral-900">
                 Guia de Medidas — Anéis
               </h3>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="text-neutral-400 hover:text-neutral-900 transition-colors"
+                aria-label="Fechar guia de medidas"
+                className="flex items-center justify-center h-8 w-8 shrink-0 rounded-full text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
               >
                 ✕
               </button>
             </div>
 
-            <p className="mb-6 text-xs leading-relaxed text-neutral-500">
-              Para descobrir seu tamanho, meça o diâmetro interno de um anel que
-              sirva confortavelmente ou meça a circunferência do seu dedo com
-              uma fita métrica.
-            </p>
+            {/* Scrollable content — takes remaining space */}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-8 pt-4 sm:px-8 sm:pb-8 sm:pt-6">
+              <p className="mb-5 text-xs leading-relaxed text-neutral-500">
+                Para descobrir seu tamanho, meça o diâmetro interno de um anel que
+                sirva confortavelmente ou meça a circunferência do seu dedo com
+                uma fita métrica.
+              </p>
 
-            <div className="overflow-hidden border border-neutral-200">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-neutral-200 bg-neutral-50">
-                    <th className="px-4 py-3 text-left font-medium text-neutral-900">
-                      Aro
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-neutral-900">
-                      Diâmetro (mm)
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium text-neutral-900">
-                      Circunferência (mm)
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {RING_SIZE_TABLE.map((row, i) => (
-                    <tr
-                      key={row.size}
-                      className={clsx(
-                        "border-b border-neutral-100 last:border-0",
-                        i % 2 === 0 ? "bg-white" : "bg-neutral-50/50",
-                      )}
-                    >
-                      <td className="px-4 py-2.5 font-medium text-neutral-900">
-                        {row.size}
-                      </td>
-                      <td className="px-4 py-2.5 text-neutral-600">
-                        {row.diameter}
-                      </td>
-                      <td className="px-4 py-2.5 text-neutral-600">
-                        {row.circumference}
-                      </td>
+              <div className="overflow-hidden border border-neutral-200">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-neutral-200 bg-neutral-50">
+                      <th className="px-3 py-3 text-left font-medium text-neutral-900 sm:px-4">
+                        Aro
+                      </th>
+                      <th className="px-3 py-3 text-left font-medium text-neutral-900 sm:px-4">
+                        Diâmetro (mm)
+                      </th>
+                      <th className="px-3 py-3 text-left font-medium text-neutral-900 sm:px-4">
+                        Circunf. (mm)
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {RING_SIZE_TABLE.map((row, i) => (
+                      <tr
+                        key={row.size}
+                        className={clsx(
+                          "border-b border-neutral-100 last:border-0",
+                          i % 2 === 0 ? "bg-white" : "bg-neutral-50/50",
+                        )}
+                      >
+                        <td className="px-3 py-2.5 font-medium text-neutral-900 sm:px-4">
+                          {row.size}
+                        </td>
+                        <td className="px-3 py-2.5 text-neutral-600 sm:px-4">
+                          {row.diameter}
+                        </td>
+                        <td className="px-3 py-2.5 text-neutral-600 sm:px-4">
+                          {row.circumference}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-            <p className="mt-4 text-[10px] text-neutral-400">
-              Em caso de dúvida, entre em contato conosco para uma medição
-              personalizada.
-            </p>
+              <p className="mt-4 text-[10px] text-neutral-400">
+                Em caso de dúvida, entre em contato conosco para uma medição
+                personalizada.
+              </p>
+            </div>
           </div>
         </div>
       )}

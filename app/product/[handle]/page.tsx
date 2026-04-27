@@ -135,7 +135,7 @@ export default async function ProductPage(
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-24">
             {/* Left: Image Gallery - Sticky */}
             <div className="w-full lg:w-3/5">
-              <div className="sticky top-24 h-[70vh] lg:h-[80vh]">
+              <div className="h-[60vh] sm:h-[65vh] lg:sticky lg:top-24 lg:h-[80vh]">
                 <Suspense
                   fallback={
                     <div className="flex h-full w-full items-center justify-center bg-white/50">
