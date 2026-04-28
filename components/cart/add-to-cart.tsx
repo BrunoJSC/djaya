@@ -4,6 +4,7 @@ import { addItem } from "components/cart/actions";
 import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
+import { Button } from "@/components/ui/button";
 import { useCart } from "./cart-context";
 
 function SubmitButton({
@@ -15,35 +16,36 @@ function SubmitButton({
 }>) {
   if (!availableForSale) {
     return (
-      <button
+      <Button
         disabled
-        className="flex w-full items-center justify-center gap-2 bg-neutral-200 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500"
+        variant="secondary"
+        className="flex h-auto w-full items-center justify-center gap-2 rounded-none bg-neutral-200 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500"
       >
         Esgotado
-      </button>
+      </Button>
     );
   }
 
   if (!selectedVariantId) {
     return (
-      <button
+      <Button
         aria-label="Por favor, selecione um tamanho"
         disabled
-        className="flex w-full items-center justify-center gap-2 bg-neutral-400 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-white opacity-80"
+        className="flex h-auto w-full items-center justify-center gap-2 rounded-none bg-neutral-400 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-white opacity-80"
       >
         Selecione um tamanho
-      </button>
+      </Button>
     );
   }
 
   return (
-    <button
+    <Button
       aria-label="Adicionar à sacola"
       type="submit"
-      className="group flex w-full items-center justify-center gap-3 bg-neutral-900 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-all hover:bg-neutral-800"
+      className="group flex h-auto w-full items-center justify-center gap-3 rounded-none bg-neutral-900 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-all hover:bg-neutral-800"
     >
       Adicionar à Sacola
-    </button>
+    </Button>
   );
 }
 

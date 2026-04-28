@@ -6,6 +6,7 @@ import Price from "components/price";
 import Prose from "components/prose";
 import { Product } from "lib/shopify/types";
 import { Suspense } from "react";
+import { Button } from "@/components/ui/button";
 import { VariantSelector } from "./variant-selector";
 
 interface ProductInfoProps {
@@ -78,13 +79,14 @@ export function ProductInfo({ product }: Readonly<ProductInfoProps>) {
             <AddToCart product={product} />
           </Suspense>
         </div>
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="icon"
           aria-label="Adicionar aos favoritos"
-          className="flex h-14 w-14 shrink-0 items-center justify-center border border-neutral-200 bg-white text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+          className="h-14 w-14 shrink-0 rounded-none border-neutral-200 text-neutral-500 transition-colors hover:bg-white hover:border-neutral-900 hover:text-neutral-900"
         >
           <HeartIcon className="h-6 w-6" />
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export function Gallery({
   images,
@@ -83,27 +84,32 @@ export function Gallery({
       {images.length > 1 && (
         <div className="hidden lg:flex w-24 shrink-0 flex-col gap-4 overflow-y-auto no-scrollbar pb-4 pt-1 px-1">
           {images.map((img, index) => (
-            <button
+            <Button
+              variant="outline"
+              asChild
               key={`${index}-${img.src}`}
-              type="button"
-              onClick={() => scrollTo(index)}
-              aria-label={`Ver imagem ${index + 1}`}
               className={clsx(
-                "relative aspect-square w-full overflow-hidden bg-neutral-50 transition-all",
+                "relative aspect-square w-full h-auto p-0 rounded-none overflow-hidden bg-neutral-50 transition-all",
                 index === selectedIndex
                   ? "border border-neutral-900/40"
-                  : "border border-neutral-200 opacity-60 hover:opacity-100"
+                  : "border border-neutral-200 opacity-60 hover:opacity-100 hover:bg-neutral-50"
               )}
             >
-              <Image
-                src={img.src}
-                alt={img.altText}
-                fill
-                className="object-cover object-center mix-blend-multiply"
-                sizes="96px"
-                quality={90}
-              />
-            </button>
+              <button
+                type="button"
+                onClick={() => scrollTo(index)}
+                aria-label={`Ver imagem ${index + 1}`}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.altText}
+                  fill
+                  className="object-cover object-center mix-blend-multiply"
+                  sizes="96px"
+                  quality={90}
+                />
+              </button>
+            </Button>
           ))}
         </div>
       )}
@@ -172,22 +178,26 @@ export function Gallery({
         {/* Navigation Arrows */}
         {images.length > 1 && (
           <>
-            <button
+            <Button
+              variant="secondary"
+              size="icon"
               type="button"
               onClick={scrollPrev}
               aria-label="Imagem anterior"
-              className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center h-10 w-10 rounded-full bg-white/80 text-neutral-700 shadow-md transition-all active:scale-95 lg:left-4 lg:h-11 lg:w-11 lg:opacity-0 lg:group-hover:opacity-100 lg:hover:bg-white lg:hover:scale-110"
+              className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-neutral-700 shadow-md transition-all active:scale-95 hover:bg-white lg:left-4 lg:h-11 lg:w-11 lg:opacity-0 lg:group-hover:opacity-100 lg:hover:scale-110"
             >
               <ArrowLeftIcon className="h-4 w-4 lg:h-5 lg:w-5" />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="secondary"
+              size="icon"
               type="button"
               onClick={scrollNext}
               aria-label="Próxima imagem"
-              className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center h-10 w-10 rounded-full bg-white/80 text-neutral-700 shadow-md transition-all active:scale-95 lg:right-4 lg:h-11 lg:w-11 lg:opacity-0 lg:group-hover:opacity-100 lg:hover:bg-white lg:hover:scale-110"
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-neutral-700 shadow-md transition-all active:scale-95 hover:bg-white lg:right-4 lg:h-11 lg:w-11 lg:opacity-0 lg:group-hover:opacity-100 lg:hover:scale-110"
             >
               <ArrowRightIcon className="h-4 w-4 lg:h-5 lg:w-5" />
-            </button>
+            </Button>
           </>
         )}
 
@@ -204,18 +214,23 @@ export function Gallery({
         {images.length > 1 && (
           <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-2.5 lg:hidden">
             {images.map((_, index) => (
-              <button
+              <Button
+                variant="ghost"
+                asChild
                 key={`dot-${index}-${images[index]?.src}`}
-                type="button"
-                onClick={() => scrollTo(index)}
-                aria-label={`Ver imagem ${index + 1}`}
                 className={clsx(
-                  "h-2 rounded-full transition-all duration-300",
+                  "h-2 p-0 rounded-full transition-all duration-300 hover:bg-transparent",
                   index === selectedIndex
                     ? "w-7 bg-neutral-800"
                     : "w-2 bg-neutral-800/30 active:bg-neutral-800/60"
                 )}
-              />
+              >
+                <button
+                  type="button"
+                  onClick={() => scrollTo(index)}
+                  aria-label={`Ver imagem ${index + 1}`}
+                />
+              </Button>
             ))}
           </div>
         )}

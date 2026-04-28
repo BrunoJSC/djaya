@@ -3,23 +3,26 @@
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { updateItemQuantity } from "components/cart/actions";
 import type { CartItem } from "lib/shopify/types";
+import { Button } from "@/components/ui/button";
 import { useActionState } from "react";
 
 function SubmitButton({ type }: { type: "plus" | "minus" }) {
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="icon"
       type="submit"
       aria-label={
         type === "plus" ? "Aumentar quantidade" : "Diminuir quantidade"
       }
-      className="flex h-7 w-7 items-center justify-center text-neutral-400 transition-colors hover:text-neutral-900"
+      className="h-7 w-7 rounded-none text-neutral-400 transition-colors hover:text-neutral-900 hover:bg-neutral-100"
     >
       {type === "plus" ? (
         <PlusIcon className="h-3 w-3" />
       ) : (
         <MinusIcon className="h-3 w-3" />
       )}
-    </button>
+    </Button>
   );
 }
 

@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { ProductOption, ProductVariant } from "lib/shopify/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type Combination = {
   id: string;
@@ -124,7 +125,8 @@ export function VariantSelector({
                 (!activeValue && value === option.values[0]);
 
               return (
-                <button
+                <Button
+                  variant="outline"
                   type="button"
                   onClick={() => updateOption(optionNameLowerCase, value)}
                   key={value}
@@ -132,13 +134,13 @@ export function VariantSelector({
                   disabled={!isAvailableForSale}
                   title={`${option.name} ${value}${isAvailableForSale ? "" : " (Indisponível)"}`}
                   className={clsx(
-                    "relative transition-all duration-200",
+                    "relative rounded-none p-0 transition-all duration-200",
                     isColor
-                      ? "h-11 w-11 rounded-full border border-neutral-300 shadow-sm"
+                      ? "h-11 w-11 rounded-full border border-neutral-300 shadow-sm hover:bg-transparent"
                       : "min-w-[56px] h-12 border px-4 text-xs font-light",
                     isActive && !isColor
-                      ? "border-neutral-900 bg-neutral-50"
-                      : "border-neutral-200 hover:border-neutral-400",
+                      ? "border-neutral-900 bg-neutral-50 hover:bg-neutral-100"
+                      : "border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50",
                     !isAvailableForSale && "opacity-40",
                   )}
                   style={isColor ? getMetalColor(value) : {}}
@@ -152,7 +154,7 @@ export function VariantSelector({
                       <span className="h-full w-[1px] bg-neutral-300 rotate-45" />
                     </span>
                   )}
-                </button>
+                </Button>
               );
             })}
           </dd>
@@ -206,22 +208,23 @@ function RingSizeSelector({
           const isActive = activeValue === value;
 
           return (
-            <button
+            <Button
+              variant="outline"
               key={value}
               type="button"
               onClick={() => onSelect(value)}
               disabled={!isAvailableForSale}
               aria-label={`Aro ${value}${isAvailableForSale ? "" : " - Indisponível"}`}
               className={clsx(
-                "relative flex h-12 w-12 shrink-0 items-center justify-center border text-sm transition-all duration-200",
+                "relative flex h-12 w-12 rounded-none p-0 shrink-0 items-center justify-center border text-sm transition-all duration-200",
                 isActive
-                  ? "border-neutral-900 bg-neutral-900 text-white"
-                  : "border-neutral-200 text-neutral-700 hover:border-neutral-400",
+                  ? "border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800 hover:text-white"
+                  : "border-neutral-200 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50",
                 !isAvailableForSale && "opacity-30 line-through",
               )}
             >
               {value}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -263,13 +266,14 @@ function SizeGuideButton() {
 
   return (
     <>
-      <button
+      <Button
+        variant="link"
         type="button"
         onClick={() => setIsOpen(true)}
-        className="text-[10px] uppercase tracking-[0.2em] text-neutral-400 underline underline-offset-4 transition-colors hover:text-neutral-900"
+        className="h-auto p-0 text-[10px] uppercase tracking-[0.2em] text-neutral-400 underline underline-offset-4 transition-colors hover:text-neutral-900"
       >
         Guia de Medidas
-      </button>
+      </Button>
 
       {isOpen && (
         <div
@@ -295,14 +299,16 @@ function SizeGuideButton() {
               <h3 className="text-base sm:text-lg font-bold text-neutral-900">
                 Guia de Medidas — Anéis
               </h3>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 type="button"
                 onClick={() => setIsOpen(false)}
                 aria-label="Fechar guia de medidas"
                 className="flex items-center justify-center h-8 w-8 shrink-0 rounded-full text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
               >
                 ✕
-              </button>
+              </Button>
             </div>
 
             {/* Scrollable content — takes remaining space */}

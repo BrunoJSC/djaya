@@ -7,6 +7,7 @@ import { Fragment, Suspense, useEffect, useState } from "react";
 
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Menu } from "lib/shopify/types";
+import { Button } from "@/components/ui/button";
 
 export default function MobileMenu({ menu }: { menu: Menu[] }) {
   const pathname = usePathname();
@@ -31,13 +32,15 @@ export default function MobileMenu({ menu }: { menu: Menu[] }) {
 
   return (
     <>
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={openMobileMenu}
         aria-label="Open mobile menu"
         className="flex items-center justify-center text-gray-800 transition-colors hover:text-black md:hidden"
       >
         <Bars3Icon className="h-5 w-5" />
-      </button>
+      </Button>
       <Transition show={isOpen}>
         <Dialog onClose={closeMobileMenu} className="relative z-50">
           <Transition.Child
@@ -62,13 +65,15 @@ export default function MobileMenu({ menu }: { menu: Menu[] }) {
           >
             <Dialog.Panel className="fixed bottom-0 left-0 right-0 top-0 flex h-full w-full flex-col bg-white pb-6 dark:bg-black">
               <div className="p-4">
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="mb-4 flex items-center justify-center text-gray-800 transition-colors hover:text-black"
                   onClick={closeMobileMenu}
                   aria-label="Close mobile menu"
                 >
                   <XMarkIcon className="h-6 w-6" />
-                </button>
+                </Button>
 
                 {menu.length ? (
                   <ul className="flex w-full flex-col">

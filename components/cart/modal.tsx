@@ -23,6 +23,7 @@ import { useCart } from "./cart-context";
 import { DeleteItemButton } from "./delete-item-button";
 import { EditItemQuantityButton } from "./edit-item-quantity-button";
 import OpenCart from "./open-cart";
+import { Button } from "@/components/ui/button";
 
 type MerchandiseSearchParams = {
   [key: string]: string;
@@ -55,9 +56,11 @@ export default function CartModal() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <button aria-label="Abrir sacola">
-          <OpenCart quantity={cart?.totalQuantity} />
-        </button>
+        <Button variant="ghost" size="icon" asChild aria-label="Abrir sacola">
+          <button>
+            <OpenCart quantity={cart?.totalQuantity} />
+          </button>
+        </Button>
       </SheetTrigger>
       <SheetContent
         side="right"
@@ -71,12 +74,14 @@ export default function CartModal() {
               <SheetTitle className="text-lg font-bold tracking-wide text-neutral-900">
                 Sacola
               </SheetTitle>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setIsOpen(false)}
-                className="flex h-8 w-8 items-center justify-center text-neutral-400 transition-colors hover:text-neutral-900"
+                className="h-8 w-8 rounded-full text-neutral-400 transition-colors hover:text-neutral-900 hover:bg-neutral-100"
               >
                 <XIcon className="h-4 w-4" weight="bold" />
-              </button>
+              </Button>
             </div>
             {cart && cart.lines.length > 0 && (
               <p className="mt-1 text-[11px] tracking-[0.1em] text-neutral-400 uppercase">
@@ -99,12 +104,13 @@ export default function CartModal() {
                   Explore nossas coleções e encontre a joia perfeita.
                 </p>
               </div>
-              <button
+              <Button
+                variant="link"
                 onClick={() => setIsOpen(false)}
-                className="mt-2 text-[10px] font-medium tracking-[0.2em] text-neutral-900 uppercase border-b border-neutral-900 pb-0.5 transition-colors hover:text-neutral-600 hover:border-neutral-600"
+                className="mt-2 h-auto p-0 rounded-none border-b border-neutral-900 pb-0.5 text-[10px] font-medium uppercase tracking-[0.2em] text-neutral-900 transition-colors hover:border-neutral-600 hover:text-neutral-600"
               >
                 Continuar Explorando
-              </button>
+              </Button>
             </div>
           ) : (
             <>
@@ -258,12 +264,13 @@ export default function CartModal() {
                   <CheckoutButton />
                 </form>
 
-                <button
+                <Button
+                  variant="link"
                   onClick={() => setIsOpen(false)}
-                  className="mx-auto mt-3 flex text-[10px] tracking-[0.15em] text-neutral-400 uppercase transition-colors hover:text-neutral-900"
+                  className="mx-auto mt-3 flex h-auto p-0 text-[10px] tracking-[0.15em] text-neutral-400 uppercase transition-colors hover:text-neutral-900"
                 >
                   Continuar comprando
-                </button>
+                </Button>
               </div>
             </>
           )}
@@ -277,16 +284,16 @@ function CheckoutButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button
-      className="flex w-full items-center justify-center bg-neutral-900 py-4 text-[11px] font-medium tracking-[0.2em] rounded-none text-white uppercase transition-colors hover:bg-neutral-800 disabled:opacity-50"
+    <Button
       type="submit"
       disabled={pending}
+      className="flex h-auto w-full items-center justify-center rounded-none bg-neutral-900 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-colors hover:bg-neutral-800 disabled:opacity-50"
     >
       {pending ? (
         <LoadingDots className="bg-white" />
       ) : (
         "Finalizar Compra"
       )}
-    </button>
+    </Button>
   );
 }

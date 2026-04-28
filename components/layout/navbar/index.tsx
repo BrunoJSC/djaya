@@ -2,6 +2,7 @@ import { UserIcon } from "@heroicons/react/24/outline";
 import CartModal from "components/cart/modal";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Button } from "@/components/ui/button";
 import MobileMenu from "./mobile-menu";
 import PrataNavigationMenu from "./prata-navigation-menu";
 
@@ -102,12 +103,14 @@ export async function Navbar() {
 
           <div className="flex items-center gap-4">
             {/* Account */}
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Account"
               className="group flex items-center justify-center transition-colors hover:text-neutral-900"
             >
               <UserIcon className="h-5 w-5 text-neutral-400 transition-colors group-hover:text-neutral-900" />
-            </button>
+            </Button>
             {/* Cart */}
             <Suspense fallback={null}>
               <CartModal />
